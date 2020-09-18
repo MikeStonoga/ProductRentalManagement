@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PRM.Domain\PRM.Domain.csproj" />
+      <ProjectReference Include="..\PRM.InterfaceAdapters.Gateways.Persistence\PRM.InterfaceAdapters.Gateways.Persistence.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="BaseCore\Dtos" />
+      <Folder Include="Rents\Validations\Requirements" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
+    </ItemGroup>
+
+</Project>

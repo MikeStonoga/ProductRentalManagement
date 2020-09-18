@@ -1,0 +1,9 @@
+﻿// PRM.Infrastructure.Persistence.MySQL
+dotnet ef --startup-project ..\PRM.Infrastructure.ApplicationDelivery.WebApiHost\ migrations add "MIGRATION NAME HERE" --context "PrmDbContext"
+dotnet ef --startup-project ..\PRM.Infrastructure.ApplicationDelivery.WebApiHost\ migrations remove --context "PrmDbContext"
+dotnet ef --startup-project ..\PRM.Infrastructure.ApplicationDelivery.WebApiHost\ database update --context "PrmDbContext"
+
+// PRM.Infrastructure.Authentication
+dotnet ef migrations add "MIGRATION NAME HERE" --context "AuthenticationDbContext" -o .\Infrastructure\Persistence\Migrations\
+dotnet ef migrations remove --context "AuthenticationDbContext"
+dotnet ef database update --context "AuthenticationDbContext"
