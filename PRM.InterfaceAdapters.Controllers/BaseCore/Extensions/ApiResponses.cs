@@ -11,14 +11,14 @@
 {
     public static class ApiResponses
     {
-        public static async Task<ApiResponse<GetAllResponse<TEntity, TOutput>>> GetUseCaseInteractorResponse<TEntity, TOutput>(Func<Guid, Task<UseCaseResult<GetAllResponse<TEntity>>>> useCase, Guid input)
+        public static async Task<ApiResponse<GetAllResponse<TOutput>>> GetUseCaseInteractorResponse<TEntity, TOutput>(Func<Guid, Task<UseCaseResult<GetAllResponse<TEntity>>>> useCase, Guid input)
             where TEntity : FullAuditedEntity, new()
-            where TOutput : TEntity, new()
+            where TOutput : class
         {
             var useCaseResponse = await useCase(input);
-            if (!useCaseResponse.Success) return Failure<GetAllResponse<TEntity, TOutput>>(useCaseResponse.Message);
+            if (!useCaseResponse.Success) return Failure<GetAllResponse<TOutput>>(useCaseResponse.Message);
             
-            var outputs = new GetAllResponse<TEntity, TOutput>
+            var outputs = new GetAllResponse<TOutput>
             {
                 Items = new List<TOutput>()
             };
@@ -32,14 +32,13 @@
             return Success(outputs, useCaseResponse.Message);
         }
         
-        public static async Task<ApiResponse<GetAllResponse<TEntity, TOutput>>> GetUseCaseInteractorResponse<TEntity, TOutput>(Func<Task<UseCaseResult<GetAllResponse<TEntity>>>> useCase)
-            where TEntity : FullAuditedEntity, new()
-            where TOutput : TEntity, new()
+        public static async Task<ApiResponse<GetAllResponse<TOutput>>> GetUseCaseInteractorResponse<TEntity, TOutput>(Func<Task<UseCaseResult<GetAllResponse<TEntity>>>> useCase)
+            where TOutput : class
         {
             var useCaseResponse = await useCase();
-            if (!useCaseResponse.Success) return Failure<GetAllResponse<TEntity, TOutput>>(useCaseResponse.Message);
+            if (!useCaseResponse.Success) return Failure<GetAllResponse<TOutput>>(useCaseResponse.Message);
             
-            var outputs = new GetAllResponse<TEntity, TOutput>
+            var outputs = new GetAllResponse<TOutput>
             {
                 Items = new List<TOutput>()
             };

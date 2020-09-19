@@ -1,10 +1,11 @@
-﻿using PRM.Domain.BaseCore.Dtos;
+﻿using System;
+using PRM.Domain.BaseCore.Dtos;
 
 namespace PRM.Domain.BaseCore.Extensions
 {
     public static class DomainValidations
     {
-        public static DomainResponseDto<TResult> GetSuccessResponse<TResult>(this TResult result, string message)
+        public static DomainResponseDto<TResult> GetSuccessResponse<TResult>(this TResult result, string message) where TResult : class
         {
             return new DomainResponseDto<TResult>
             {
@@ -14,26 +15,15 @@ namespace PRM.Domain.BaseCore.Extensions
             };
         }
         
-        public static DomainResponseDto<TResult> Failure<TResult>(this TResult result, string message)
-        {
-            return new DomainResponseDto<TResult>
-            {
-                Success = false,
-                Message = message,
-                Result = result
-
-            };
-        }
         
-        public static DomainResponseDto<TResult> Failure<TResult>(string message) where TResult : new()
+        public static DomainResponseDto<TResult> Failure<TResult>(string message) where TResult : class
         {
-            var result = new TResult();
+            var result = Activator.CreateInstance<TResult>();
             return new DomainResponseDto<TResult>
             {
                 Success = false,
                 Message = message,
                 Result = result
-
             };
         }
     }

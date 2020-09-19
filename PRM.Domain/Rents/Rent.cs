@@ -13,11 +13,11 @@ using PRM.Domain.Rents.Enums;
 
 namespace PRM.Domain.Rents
 {
-    public class Rent : FullAuditedEntity
+    public sealed class Rent : FullAuditedEntity
     {
         #region Properties
         public Guid RenterId { get; set; }
-        public RentStatus Status { get; private set; }
+        private RentStatus Status { get; set; }
         public DateRange RentPeriod { get; set; }
         public decimal DailyPrice { get; set; }
         public decimal DailyLateFee { get; set; }
@@ -47,11 +47,15 @@ namespace PRM.Domain.Rents
 
         #region Constructors
         
-        public Rent()
-        {
-        }
+        private Rent() {}
         
-        public Rent(DateRange rentPeriod, List<Product> productsToRent, Renter renter)
+        public Rent(Guid id, Guid creatorId, DateRange rentPeriod, List<Product> productsToRent, Renter renter) 
+            : base(
+                id, 
+                name: renter.Name + " - " + rentPeriod.StartDate + " - " +  productsToRent.Count + " products", 
+                code: Guid.NewGuid().ToString().Substring(0, 5), 
+                creatorId
+                )
         {
             var isTryingToRentWithoutProducts = productsToRent == null || productsToRent.Count == 0;
             if (isTryingToRentWithoutProducts) throw new ValidationException("Trying to create a Rent without any Products");
@@ -61,10 +65,9 @@ namespace PRM.Domain.Rents
             if (hasUnavailableProduct) throw new ValidationException(productsToRent.GetProductsWithErrorMessage("Trying to rent unavailable products:", IsUnavailableProduct));
             RentedProductsCount = productsToRent.Count;
 
-            Name = "Created: " + DateTime.Now.FormatDate() + " - Start: " + rentPeriod.StartDate.FormatDate() + " - End: " + rentPeriod.EndDate.FormatDate();
+            SetName("Created: " + DateTime.Now.FormatDate() + " - Start: " + rentPeriod.StartDate.FormatDate() + " - End: " + rentPeriod.EndDate.FormatDate());
             DailyPrice = productsToRent.Sum(p => (p.RentDailyPrice));
             RentPeriod = rentPeriod;
-            CreationTime = DateTime.Now;
             DailyLateFee = productsToRent.Sum(p => p.RentDailyLateFee);
             RenterId = renter.Id;
         }

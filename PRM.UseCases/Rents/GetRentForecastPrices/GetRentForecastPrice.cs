@@ -34,7 +34,7 @@ namespace PRM.UseCases.Rents.GetRentForecastPrices
             var validationResponse = await _validateRentRequirement.ValidateForForecast(rentRequirement);
             if (!validationResponse.Success) return UseCasesResponses.Failure<GetRentForecastPriceResult>(validationResponse.Message);
             
-            var rentForecastPrice = new Rent(validationResponse.Result.RentPeriod, validationResponse.Result.Products, validationResponse.Result.Renter).PriceWithoutFees;
+            var rentForecastPrice = new Rent(Guid.NewGuid(), requirement.CreatorId, validationResponse.Result.RentPeriod, validationResponse.Result.Products, validationResponse.Result.Renter).PriceWithoutFees;
             
             var rentForecastPriceResult =new GetRentForecastPriceResult(rentForecastPrice);
             return UseCasesResponses.Success(rentForecastPriceResult);

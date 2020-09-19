@@ -5,27 +5,28 @@ using PRM.Domain.Rents;
 
 namespace PRM.Domain.Renters
 {
-    public class RenterRentalHistory : FullAuditedEntity
+    public sealed class RenterRentalHistory : FullAuditedEntity
     {
         #region Properties
-        public Guid RentId { get; set; }
-        public Guid RenterId { get; set; }
+        public Guid RentId { get; private set; }
+        public Guid RenterId { get; private set; }
 
         #endregion
 
         #region Constructors
 
-        public RenterRentalHistory()
-        {
-            
-        }
+        private RenterRentalHistory() { }
         
-        public RenterRentalHistory(Rent rent, Renter renter, Guid creatorId)
+        public RenterRentalHistory(Guid id, Rent rent, Renter renter) 
+            : base(
+                id, 
+                name: renter.Name + " - " + renter.GovernmentRegistrationDocumentCode + " - " + rent.RentPeriod.StartDate.FormatDate() + " - " + rent.RentPeriod.EndDate.FormatDate(), 
+                code: Guid.NewGuid().ToString().Substring(0,7), 
+                rent.CreatorId
+            )
         {
-            Name = renter.Name + " - " + renter.GovernmentRegistrationDocumentCode + " - " + rent.RentPeriod.StartDate.FormatDate() + " - " + rent.RentPeriod.EndDate.FormatDate();
             RentId = rent.Id;
             RenterId = renter.Id;
-            CreatorId = creatorId;
         }
 
         #endregion

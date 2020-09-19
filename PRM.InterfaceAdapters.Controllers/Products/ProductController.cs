@@ -17,9 +17,9 @@ namespace PRM.InterfaceAdapters.Controllers.Products
     {
         Task<ApiResponse<CheckProductAvailabilityOutput>> CheckProductAvailability(Guid productId);
         Task<ApiResponse<GetLastProductRentOutput>> GetLastRent(Guid productId);
-        Task<ApiResponse<GetAllResponse<Product, ProductOutput>>> GetAvailables();
-        Task<ApiResponse<GetAllResponse<Product, ProductOutput>>> GetUnavailables();
-        Task<ApiResponse<GetAllResponse<ProductRentalHistory, ProductRentalHistoryOutput>>> GetRentalHistory(Guid productId);
+        Task<ApiResponse<GetAllResponse<ProductOutput>>> GetAvailables();
+        Task<ApiResponse<GetAllResponse<ProductOutput>>> GetUnavailables();
+        Task<ApiResponse<GetAllResponse<ProductRentalHistoryOutput>>> GetRentalHistory(Guid productId);
     }
 
     public class ProductReadOnlyController : BaseReadOnlyController<Product, ProductOutput, IProductUseCasesReadOnlyInteractor>, IProductReadOnlyController
@@ -40,17 +40,17 @@ namespace PRM.InterfaceAdapters.Controllers.Products
             return await ApiResponses.GetUseCaseInteractorResponse<Guid, GetLastProductRentResult, Guid, GetLastProductRentOutput>(_productRentalHistoryUseCasesReadOnlyInteractor.GetLastProductRent, productId);
         }
 
-        public async Task<ApiResponse<GetAllResponse<Product, ProductOutput>>> GetAvailables()
+        public async Task<ApiResponse<GetAllResponse<ProductOutput>>> GetAvailables()
         {
-            return await ApiResponses.GetUseCaseInteractorResponse<Product, ProductOutput>(UseCaseReadOnlyInteractor.GetAvailablesProducts);
+            return await ApiResponses.GetUseCaseInteractorResponse<ProductOutput>(UseCaseReadOnlyInteractor.GetAvailablesProducts);
         }
 
-        public async Task<ApiResponse<GetAllResponse<Product, ProductOutput>>> GetUnavailables()
+        public async Task<ApiResponse<GetAllResponse<ProductOutput>>> GetUnavailables()
         {
-            return await ApiResponses.GetUseCaseInteractorResponse<Product, ProductOutput>(UseCaseReadOnlyInteractor.GetUnavailablesProducts);
+            return await ApiResponses.GetUseCaseInteractorResponse<ProductOutput>(UseCaseReadOnlyInteractor.GetUnavailablesProducts);
         }
 
-        public async Task<ApiResponse<GetAllResponse<ProductRentalHistory, ProductRentalHistoryOutput>>> GetRentalHistory(Guid productId)
+        public async Task<ApiResponse<GetAllResponse<ProductRentalHistoryOutput>>> GetRentalHistory(Guid productId)
         {
             return await ApiResponses.GetUseCaseInteractorResponse<ProductRentalHistory, ProductRentalHistoryOutput>(_productRentalHistoryUseCasesReadOnlyInteractor.GetRentalHistory, productId);
         }
@@ -77,17 +77,17 @@ namespace PRM.InterfaceAdapters.Controllers.Products
             return await ReadOnlyController.GetLastRent(productId);
         }
 
-        public async Task<ApiResponse<GetAllResponse<Product, ProductOutput>>> GetAvailables()
+        public async Task<ApiResponse<GetAllResponse<ProductOutput>>> GetAvailables()
         {
             return await ReadOnlyController.GetAvailables();
         }
 
-        public async Task<ApiResponse<GetAllResponse<Product, ProductOutput>>> GetUnavailables()
+        public async Task<ApiResponse<GetAllResponse<ProductOutput>>> GetUnavailables()
         {
             return await ReadOnlyController.GetUnavailables();
         }
 
-        public async Task<ApiResponse<GetAllResponse<ProductRentalHistory, ProductRentalHistoryOutput>>> GetRentalHistory(Guid productId)
+        public async Task<ApiResponse<GetAllResponse<ProductRentalHistoryOutput>>> GetRentalHistory(Guid productId)
         {
             return await ReadOnlyController.GetRentalHistory(productId);
         }

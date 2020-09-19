@@ -62,11 +62,17 @@ namespace PRM.UseCases.Rents.Validations.Requirements.Rents
             var renter = new PersistenceResponse<Renter>
             {
                 Success = true,
-                Response = new Renter
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Forecast"
-                }
+                Response = new Renter(
+                    id: Guid.NewGuid(),
+                    name: "Forecast",
+                    code: "123",
+                    creatorId: Guid.NewGuid(), 
+                    new GovernmentRegistrationDocumentCode("99999999999"),
+                    new Email("forecast@forecast.com"),
+                    new Phone("041", "999999999"),
+                    new BirthDate(DateTime.Now.AddYears(-20)),
+                    personImage: new byte[] {}
+                )
             };
             
             var rentPeriod = DateRangeProvider.GetDateRange(requirement.StartDate, requirement.EndDate);

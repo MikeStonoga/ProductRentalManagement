@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using PRM.Domain.BaseCore.Dtos;
-using PRM.Domain.BaseCore.Extensions;
 
 namespace PRM.Domain.BaseCore.ValueObjects
 {
@@ -38,11 +37,17 @@ namespace PRM.Domain.BaseCore.ValueObjects
         {
             return StartDate <= date && date <= EndDate;
         }
-        
-        public bool IsOnRange(DateRange input)
+
+        public bool IsOnRange(DateTime? date)
         {
-            return StartDate <= input.StartDate && input.EndDate <= EndDate;
+            return date != null && IsOnRange(date.Value);
         }
+        
+        public bool IsOnRange(DateRange dateRange)
+        {
+            return StartDate <= dateRange.StartDate && dateRange.EndDate <= EndDate;
+        }
+        
     }
 
     public static class DateRangeProvider

@@ -1,13 +1,30 @@
-﻿using PRM.Domain.Renters;
+﻿using System;
+using PRM.Domain.Renters;
 
 namespace PRM.InterfaceAdapters.Controllers.Renters.Dtos.RentalHistory
 {
-    public class RenterRentalHistoryOutput : RenterRentalHistory
+    public class RenterRentalHistoryOutput
     {
-        public RenterRentalHistoryOutput()
-        {
-            
-        }
+        public Guid Id { get; }
+
+        public string Code { get; }
+
+        public string Name { get; }
+
+        public DateTime CreationTime { get; }
+
+        public Guid CreatorId { get; }
+
+        public DateTime? LastModificationTime { get; }
+
+        public Guid? LastModifierId { get; }
+
+        public Guid RentId { get; }
+
+        public Guid RenterId { get; }
+        
+        
+        private RenterRentalHistoryOutput() { }
         
         public RenterRentalHistoryOutput(RenterRentalHistory history)
         {
@@ -16,9 +33,6 @@ namespace PRM.InterfaceAdapters.Controllers.Renters.Dtos.RentalHistory
             Name = history.Name;
             CreationTime = history.CreationTime;
             CreatorId = history.CreatorId;
-            DeleterId = history.DeleterId;
-            DeletionTime = history.DeletionTime;
-            IsDeleted = history.IsDeleted;
             LastModificationTime = history.LastModificationTime;
             LastModifierId = history.LastModifierId;
             RentId = history.RentId;

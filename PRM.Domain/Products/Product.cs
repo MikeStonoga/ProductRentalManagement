@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using PRM.Domain.BaseCore;
 using PRM.Domain.Products.Enums;
 
 namespace PRM.Domain.Products
 {
-    public class Product : FullAuditedEntity
+    public sealed class Product : FullAuditedEntity
     {
         #region Properties
 
@@ -34,6 +35,18 @@ namespace PRM.Domain.Products
                 if (value == 0M) throw new ValidationException("Product must have a rent daily late fee");
                 _rentDailyLateFee = value;
             }
+        }
+
+        #endregion
+
+        #region Constructors
+
+        public Product(Guid id, string name, string code, Guid creatorId, string description, decimal rentDailyPrice, decimal rentDailyLateFee) : base(id, name, code, creatorId)
+        {
+            Description = description;
+            Status = ProductStatus.Available;
+            RentDailyPrice = rentDailyPrice;
+            RentDailyLateFee = rentDailyLateFee;
         }
 
         #endregion

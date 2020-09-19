@@ -16,8 +16,8 @@ namespace PRM.InterfaceAdapters.Controllers.Renters
 {
     public interface IRenterReadOnlyController : IBaseReadOnlyController<Renter, RenterOutput>
     {
-        Task<ApiResponse<GetAllResponse<Renter, RenterOutput>>> GetBirthDaysOnPeriod(GetBirthDaysOnPeriodInput input);
-        Task<ApiResponse<GetAllResponse<RenterRentalHistory, RenterRentalHistoryOutput>>> GetRentalHistory(Guid renterId);
+        Task<ApiResponse<GetAllResponse<RenterOutput>>> GetBirthDaysOnPeriod(GetBirthDaysOnPeriodInput input);
+        Task<ApiResponse<GetAllResponse<RenterRentalHistoryOutput>>> GetRentalHistory(Guid renterId);
         Task<ApiResponse<GetLastRenterRentOutput>> GetLastRent(Guid renterId);
         Task<ApiResponse<GetProductsPerRentAverageOutput>> GetProductsPerRentAverage(Guid renterId);
         
@@ -44,17 +44,17 @@ namespace PRM.InterfaceAdapters.Controllers.Renters
             _renterRentalHistoryUseCasesReadOnlyInteractor = renterRentalHistoryUseCasesReadOnlyInteractor;
         }
 
-        public async Task<ApiResponse<GetAllResponse<Renter, RenterOutput>>> GetBirthDaysOnPeriod(GetBirthDaysOnPeriodInput input)
+        public async Task<ApiResponse<GetAllResponse<RenterOutput>>> GetBirthDaysOnPeriod(GetBirthDaysOnPeriodInput input)
         {
             var period = DateRangeProvider.GetDateRange(input.StartDate, input.EndDate);
-            if (!period.Success) return ApiResponses.Failure<GetAllResponse<Renter, RenterOutput>>(period.Message);
+            if (!period.Success) return ApiResponses.Failure<GetAllResponse<RenterOutput>>(period.Message);
 
             return await GetAll(r => period.Result.IsMonthOnRange(r.BirthDate.Date.Month));
         }
 
-        public async Task<ApiResponse<GetAllResponse<RenterRentalHistory, RenterRentalHistoryOutput>>> GetRentalHistory(Guid renterId)
+        public async Task<ApiResponse<GetAllResponse<RenterRentalHistoryOutput>>> GetRentalHistory(Guid renterId)
         {
-            return await ApiResponses.GetUseCaseInteractorResponse<RenterRentalHistory, RenterRentalHistoryOutput>(_renterRentalHistoryUseCasesReadOnlyInteractor.GetRentalHistory, renterId);
+            return await ApiResponses.GetUseCaseInteractorResponse<RenterRentalHistoryOutput>(_renterRentalHistoryUseCasesReadOnlyInteractor.GetRentalHistory, renterId);
         }
 
         public async Task<ApiResponse<GetLastRenterRentOutput>> GetLastRent(Guid renterId)
@@ -80,12 +80,12 @@ namespace PRM.InterfaceAdapters.Controllers.Renters
         {
         }
 
-        public async Task<ApiResponse<GetAllResponse<Renter, RenterOutput>>> GetBirthDaysOnPeriod(GetBirthDaysOnPeriodInput input)
+        public async Task<ApiResponse<GetAllResponse<RenterOutput>>> GetBirthDaysOnPeriod(GetBirthDaysOnPeriodInput input)
         {
             return await ReadOnlyController.GetBirthDaysOnPeriod(input);
         }
 
-        public async Task<ApiResponse<GetAllResponse<RenterRentalHistory, RenterRentalHistoryOutput>>> GetRentalHistory(Guid renterId)
+        public async Task<ApiResponse<GetAllResponse<RenterRentalHistoryOutput>>> GetRentalHistory(Guid renterId)
         {
             return await ReadOnlyController.GetRentalHistory(renterId);
         }

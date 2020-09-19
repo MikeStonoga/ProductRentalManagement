@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using PRM.Domain.BaseCore.Dtos;
 using PRM.Domain.Products;
 using PRM.Domain.Renters;
@@ -38,7 +39,7 @@ namespace PRM.UseCases.Rents.RentProducts
             var validationResponse = await _validateRentRequirement.Validate(requirement);
             if (!validationResponse.Success) return UseCasesResponses.Failure<RentProductsResult>(validationResponse.Message);
             
-            var rentToCreate = new Rent(validationResponse.Result.RentPeriod, validationResponse.Result.Products, validationResponse.Result.Renter);
+            var rentToCreate = new Rent(Guid.NewGuid(), requirement.CreatorId, validationResponse.Result.RentPeriod, validationResponse.Result.Products, validationResponse.Result.Renter);
                 
             
             var rentProductsResponse = rentToCreate.RentProducts();
@@ -57,13 +58,13 @@ namespace PRM.UseCases.Rents.RentProducts
         {
             // TODO: UnitOfWork
             var rentCreatedResponse = await _rents.Create(rentProductsResponse.Result);
-            await _renterRentalHistories.Create(new RenterRentalHistory(rentCreatedResponse.Response, validationResponse.Result.Renter, rentCreatedResponse.Response.CreatorId));
+            await _renterRentalHistories.Create(new RenterRentalHistory(Guid.NewGuid(), rentCreatedResponse.Response, validationResponse.Result.Renter));
             
             foreach (var product in validationResponse.Result.Products)
             {
                 product.MarkAsUnavailable();
                 await _products.Update(product);
-                await _productRentalHistories.Create(new ProductRentalHistory(rentCreatedResponse.Response, product, validationResponse.Result.Renter, rentCreatedResponse.Response.CreatorId));
+                await _productRentalHistories.Create(new ProductRentalHistory(Guid.NewGuid(), rentCreatedResponse.Response, product, validationResponse.Result.Renter));
             }
 
             return rentCreatedResponse.Response;

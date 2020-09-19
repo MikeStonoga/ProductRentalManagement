@@ -21,22 +21,22 @@ namespace PRM.InterfaceAdapters.Controllers.Rents
     public interface IRentReadOnlyController : IBaseReadOnlyController<Rent, RentOutput>
     {
         Task<ApiResponse<GetRentForecastPriceOutput>> GetRentForecastPrice(GetRentForecastPriceInput input);
-        Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetOpenRents();
-        Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetOpenRentsFromPeriod(PeriodInput input);
-        Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetLateRents();
-        Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetNotLateRents();
-        Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetOpenLateRents();
-        Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetOpenNotLateRents();
-        Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetClosedLateRents();
-        Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetClosedNotLateRents();
+        Task<ApiResponse<GetAllResponse<RentOutput>>> GetOpenRents();
+        Task<ApiResponse<GetAllResponse<RentOutput>>> GetOpenRentsFromPeriod(PeriodInput input);
+        Task<ApiResponse<GetAllResponse<RentOutput>>> GetLateRents();
+        Task<ApiResponse<GetAllResponse<RentOutput>>> GetNotLateRents();
+        Task<ApiResponse<GetAllResponse<RentOutput>>> GetOpenLateRents();
+        Task<ApiResponse<GetAllResponse<RentOutput>>> GetOpenNotLateRents();
+        Task<ApiResponse<GetAllResponse<RentOutput>>> GetClosedLateRents();
+        Task<ApiResponse<GetAllResponse<RentOutput>>> GetClosedNotLateRents();
         Task<ApiResponse<int>> GetLateDays(Guid rentId);
         Task<ApiResponse<DateRange>> GetRentPeriod(Guid rentId);
         Task<ApiResponse<decimal>> GetRentAverageTicket(Guid rentId);
         Task<ApiResponse<decimal>> GetRentAverageTicketWithDiscount(Guid rentId);
         Task<ApiResponse<decimal>> GetRentAverageTicketWithoutFees(Guid rentId);
         Task<ApiResponse<decimal>> GetRentAverageTicketWithoutFeesWithDiscount(Guid rentId);
-        Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetClosedRents();
-        Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetClosedRentsFromPeriod(PeriodInput input);
+        Task<ApiResponse<GetAllResponse<RentOutput>>> GetClosedRents();
+        Task<ApiResponse<GetAllResponse<RentOutput>>> GetClosedRentsFromPeriod(PeriodInput input);
         Task<ApiResponse<GetOpenRentsPaymentForecastOutput>> GetOpenRentsPaymentForecast(GetOpenRentsPaymentForecastInput input);
     }
      
@@ -55,40 +55,40 @@ namespace PRM.InterfaceAdapters.Controllers.Rents
         }
 
         // TODO Migrate to UseCases
-        public async Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetOpenRents()
+        public async Task<ApiResponse<GetAllResponse<RentOutput>>> GetOpenRents()
         {
             return await GetAll(r => r.IsOpen);
         }
 
         // TODO Migrate to UseCases
-        public async Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetOpenRentsFromPeriod(PeriodInput input)
+        public async Task<ApiResponse<GetAllResponse<RentOutput>>> GetOpenRentsFromPeriod(PeriodInput input)
         {
             var period = DateRangeProvider.GetDateRange(input.StartDate, input.EndDate);
-            if (!period.Success) return ApiResponses.Failure<GetAllResponse<Rent, RentOutput>>(period.Message);
+            if (!period.Success) return ApiResponses.Failure<GetAllResponse<RentOutput>>(period.Message);
             
             return await GetAll(r => r.IsOpen && period.Result.IsOnRange(r.RentPeriod));
         }
 
         // TODO Migrate to UseCases
-        public async Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetLateRents()
+        public async Task<ApiResponse<GetAllResponse<RentOutput>>> GetLateRents()
         {
             return await GetAll(r => r.IsLate);
         }
         
         // TODO Migrate to UseCases
-        public async Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetNotLateRents()
+        public async Task<ApiResponse<GetAllResponse<RentOutput>>> GetNotLateRents()
         {
             return await GetAll(r => !r.IsLate);
         }
         
         // TODO Migrate to UseCases
-        public async Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetOpenLateRents()
+        public async Task<ApiResponse<GetAllResponse<RentOutput>>> GetOpenLateRents()
         {
             return await GetAll(r => r.IsLate && !r.IsOpen);
         }
         
         // TODO Migrate to UseCases
-        public async Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetOpenNotLateRents()
+        public async Task<ApiResponse<GetAllResponse<RentOutput>>> GetOpenNotLateRents()
         {
             return await GetAll(r => !r.IsLate && r.IsOpen);
         }
@@ -121,7 +121,7 @@ namespace PRM.InterfaceAdapters.Controllers.Rents
         }
         
         // TODO Migrate to UseCases
-        public async Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetClosedRents()
+        public async Task<ApiResponse<GetAllResponse<RentOutput>>> GetClosedRents()
         {
             return await GetAll(r => r.IsClosed);
         }
@@ -154,22 +154,22 @@ namespace PRM.InterfaceAdapters.Controllers.Rents
         }
 
         // TODO Migrate to UseCases
-        public async Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetClosedLateRents()
+        public async Task<ApiResponse<GetAllResponse<RentOutput>>> GetClosedLateRents()
         {
             return await GetAll(r => r.IsLate && r.IsClosed);
         }
         
         // TODO Migrate to UseCases
-        public async Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetClosedNotLateRents()
+        public async Task<ApiResponse<GetAllResponse<RentOutput>>> GetClosedNotLateRents()
         {
             return await GetAll(r => !r.IsLate && r.IsClosed);
         }
 
         // TODO Migrate to UseCases
-        public async Task<ApiResponse<GetAllResponse<Rent, RentOutput>>> GetClosedRentsFromPeriod(PeriodInput input)
+        public async Task<ApiResponse<GetAllResponse<RentOutput>>> GetClosedRentsFromPeriod(PeriodInput input)
         {
             var period = DateRangeProvider.GetDateRange(input.StartDate, input.EndDate);
-            if (!period.Success) return ApiResponses.Failure<GetAllResponse<Rent, RentOutput>>(period.Message);
+            if (!period.Success) return ApiResponses.Failure<GetAllResponse<RentOutput>>(period.Message);
             
             return await GetAll(r => r.IsClosed && period.Result.IsOnRange(r.RentPeriod));
         }

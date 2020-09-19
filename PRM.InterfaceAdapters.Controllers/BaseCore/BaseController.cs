@@ -1,7 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
- using System.Linq.Expressions;
  using System.Threading.Tasks;
  using Microsoft.AspNetCore.Mvc;
  using PRM.Domain.BaseCore;
@@ -13,27 +12,24 @@ namespace PRM.InterfaceAdapters.Controllers.BaseCore
 {
     public interface IBaseReadOnlyController<TEntity, TEntityOutput>
         where TEntity : FullAuditedEntity
-        where TEntityOutput : TEntity
     {
-
     }
     
-    public class GetAllResponse<TEntity, TEntityOutput> where TEntityOutput : TEntity where TEntity : FullAuditedEntity
+    public class GetAllResponse<TEntityOutput>
     {
         public List<TEntityOutput> Items { get; set; }
         public int TotalCount { get; set; }
     }
     
-    public interface IBaseManipulationController<TEntity, TEntityInput, TEntityOutput> : IBaseReadOnlyController<TEntity, TEntityOutput> 
+    public interface IBaseManipulationController<TEntity, in TEntityInput, TEntityOutput> : IBaseReadOnlyController<TEntity, TEntityOutput> 
         where TEntity : FullAuditedEntity
-        where TEntityOutput : TEntity
+        where TEntityOutput : class
     {
-
     }
 
     public abstract class BaseReadOnlyController<TEntity, TEntityOutput, TIEntityUseCaseReadOnlyInteractor> : ControllerBase, IBaseReadOnlyController<TEntity, TEntityOutput> 
         where TEntity : FullAuditedEntity
-        where TEntityOutput : TEntity, new()
+        where TEntityOutput : class
         where TIEntityUseCaseReadOnlyInteractor : IBaseUseCaseReadOnlyInteractor<TEntity>
     {
 
@@ -48,7 +44,7 @@ namespace PRM.InterfaceAdapters.Controllers.BaseCore
         {
             var useCaseResult = await UseCaseReadOnlyInteractor.GetById(id);
             var wasSuccessfullyExecuted = useCaseResult.Success;
-            if (!wasSuccessfullyExecuted) return ApiResponses.Failure(new TEntityOutput(), useCaseResult.Message);
+            if (!wasSuccessfullyExecuted) return ApiResponses.Failure(Activator.CreateInstance<TEntityOutput>(), useCaseResult.Message);
 
             var entityOutput = Activator.CreateInstance(typeof(TEntityOutput), useCaseResult.Result) as TEntityOutput;
             return ApiResponses.Success(entityOutput);
@@ -67,18 +63,18 @@ namespace PRM.InterfaceAdapters.Controllers.BaseCore
                 : ApiResponses.Failure(entityOutputs, useCaseResult.Message);
         }
 
-        public virtual async Task<ApiResponse<GetAllResponse<TEntity, TEntityOutput>>> GetAll()
+        public virtual async Task<ApiResponse<GetAllResponse<TEntityOutput>>> GetAll()
         {
             return await GetAll(null);
         }
         
-        protected async Task<ApiResponse<GetAllResponse<TEntity, TEntityOutput>>> GetAll(Func<TEntity, bool> whereExpression = null)
+        protected async Task<ApiResponse<GetAllResponse<TEntityOutput>>> GetAll(Func<TEntity, bool> whereExpression = null)
         {
             var useCaseResult = await UseCaseReadOnlyInteractor.GetAll(whereExpression);
             var wasSuccessfullyExecuted = useCaseResult.Success;
             if (!wasSuccessfullyExecuted)
             {
-                var failureResult = new GetAllResponse<TEntity, TEntityOutput>
+                var failureResult = new GetAllResponse<TEntityOutput>
                 {
                     Items = new List<TEntityOutput>(),
                     TotalCount = 0
@@ -88,7 +84,7 @@ namespace PRM.InterfaceAdapters.Controllers.BaseCore
             
             var entityOutputs = useCaseResult.Result.Items.Select(result => Activator.CreateInstance(typeof(TEntityOutput), result) as TEntityOutput).ToList();
             
-            var getAllOutput = new GetAllResponse<TEntity, TEntityOutput>
+            var getAllOutput = new GetAllResponse<TEntityOutput>
             {
                 Items = entityOutputs,
                 TotalCount = useCaseResult.Result.TotalCount
@@ -100,7 +96,7 @@ namespace PRM.InterfaceAdapters.Controllers.BaseCore
 
     public abstract class BaseManipulationController<TEntity, TEntityInput, TEntityOutput, TIEntityUseCaseManipulationInteractor, TIEntityReadOnlyController> : BaseReadOnlyController<TEntity, TEntityOutput, TIEntityUseCaseManipulationInteractor>,  IBaseManipulationController<TEntity, TEntityInput, TEntityOutput>
         where TEntity : FullAuditedEntity
-        where TEntityOutput : TEntity, new()
+        where TEntityOutput : class
         where TEntityInput : TEntity, IAmManipulationInput<TEntity>
         where TIEntityUseCaseManipulationInteractor : IBaseUseCaseManipulationInteractor<TEntity>
         where TIEntityReadOnlyController : IBaseReadOnlyController<TEntity, TEntityOutput>
@@ -125,7 +121,7 @@ namespace PRM.InterfaceAdapters.Controllers.BaseCore
             var useCaseResult = await UseCaseInteractor.Create(entity);
             
             var wasSuccessfullyExecuted = useCaseResult.Success;
-            if (!wasSuccessfullyExecuted) return ApiResponses.Failure(new TEntityOutput(), useCaseResult.Message);
+            if (!wasSuccessfullyExecuted) return ApiResponses.Failure(Activator.CreateInstance<TEntityOutput>(), useCaseResult.Message);
 
             var entityOutput = Activator.CreateInstance(typeof(TEntityOutput), useCaseResult.Result) as TEntityOutput;
             return ApiResponses.Success(entityOutput);
@@ -142,7 +138,7 @@ namespace PRM.InterfaceAdapters.Controllers.BaseCore
             var useCaseResult = await UseCaseInteractor.Update(entity);
             
             var wasSuccessfullyExecuted = useCaseResult.Success;
-            if (!wasSuccessfullyExecuted) return ApiResponses.Failure(new TEntityOutput(), useCaseResult.Message);
+            if (!wasSuccessfullyExecuted) return ApiResponses.Failure(Activator.CreateInstance<TEntityOutput>(), useCaseResult.Message);
 
             var entityOutput = Activator.CreateInstance(typeof(TEntityOutput), useCaseResult.Result) as TEntityOutput;
             return ApiResponses.Success(entityOutput);
